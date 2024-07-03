@@ -438,11 +438,15 @@ class BattleSystem:
                     self.player.current_selected_target = None # type: ignore
                     self.player.current_angle = 0
 
-                if self.enemy.current_shield > 0:
-                    self.enemy.current_shield -= new_ship_dmg
+
+                if self.enemy.current_shield > 0 and self.enemy.current_hitpoints > 0:
+                    self.enemy.current_hitpoints -= int(new_ship_dmg * 0.3)
+                    self.enemy.current_shield -=  int(new_ship_dmg * 0.7)
+
                 else:
                     self.enemy.current_shield = 0
                     self.enemy.current_hitpoints -= new_ship_dmg
+
 
                 self.last_hit_time = current_time
                 
