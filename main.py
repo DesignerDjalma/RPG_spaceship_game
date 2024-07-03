@@ -419,7 +419,7 @@ class BattleSystem:
             if current_time - self.last_hit_time >= 750:  # 1000 milliseconds = 1 second
 
 
-                pygame.mixer.Sound(r"C:\Users\djalm\Downloads\WarUniverse.1.215.0\audio\sounds\lasers\laser_4.wav").play()
+                pygame.mixer.Sound(root / "audio" / "sounds" / "lasers" / "laser_4.wav").play()
 
 
 
@@ -783,11 +783,11 @@ class Game:
 
 
 
-        self.fixed = pygame.image.load( fr"{root}\hud\cpbtn.png").convert_alpha()
+        self.fixed = pygame.image.load( root  / "hud" / "cpbtn.png").convert_alpha()
         self.fixed_rect = self.fixed.get_rect()
-        self.BG = pygame.image.load(    fr"{root}\maps\e2\bg.jpg")
-        self.BG_MP3= pygame.mixer.Sound(fr"{root}\audio\music\kek.mp3")
-        pygame.mixer.Sound(             fr"{root}\audio\sounds\greeting\default.mp3").play()
+        self.BG = pygame.image.load(    root  / "maps" / "e2" / "bg.jpg")
+        self.BG_MP3= pygame.mixer.Sound(root  / "audio" / "music" / "kek.mp3")
+        pygame.mixer.Sound(             root  / "audio" / "sounds" / "greeting" / "default.mp3").play()
 
         self.BG_MP3.play(loops=-1)
         self.bg_width, self.bg_height = self.BG.get_size()
