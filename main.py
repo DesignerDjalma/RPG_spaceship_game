@@ -1,43 +1,114 @@
 from __future__ import annotations
-from abc import ABC
-import math
+
 import os
-import random
 import sys
+import math
+import random
 import pygame
 import datetime
-import shipsavaliable
+
 from pygame import Surface
-from typing import Any, List, Optional, Tuple
 from pygame.sprite import AbstractGroup
 from dataclasses import dataclass
-from tests.equations import mapValues
-from root import root
+from typing import Any, List, Optional, Tuple
+from pathlib import Path
+from abc import ABC
 
-
-root_folder = os.path.dirname(os.path.abspath(__file__))
-players_ships = { f"ship{i}0": os.path.join(root_folder, 'ships', '3d',  f"ship{i}0.png") for i in range(1, 11, 1) }
-aliens_ships = { f"alien{i}0": os.path.join(root_folder, 'ships', '3d',  f"alien{i}0.png") for i in range(1, 10, 1) }
-
+root = Path(__file__).parent
 
 @dataclass
 class Map:
     id: int
     name: str
     map_limits: list[float]
-    size: list[float]
  
+class ShipsAvaliable:
+    __speed_factor = 1
 
-map_11 = Map(
-    1, "Frist Space Base", 
-    [1280, 720], [1280, 720]
-)
+    ship_shuttle = {
+        "ship_sprite": {
+            "imagePath": str(root / "ships" / "3d" / "ship10.png"),
+            "imageColumns": 9,
+            "imageFrames": 72,
+        },
+        "ship_name": "Shuttle",
+        "ship_type": "Cruiser",
+        "ship_hitpoints": 8000,
+        "ship_speed": 330 * __speed_factor,
+        "ship_slots_laser": 1,
+        "ship_slots_generators": 1,
+        "ship_slots_extras": 1,
+        "ship_cargo": 200,
+        "ship_price": (0, "BTC"),
+        "ship_attack_range": 500,
+    }
+    ship_zephyrus = {
+        "ship_sprite": {
+            "imagePath": str(root / "ships" / "3d" / "ship20.png"),
+            "imageColumns": 9,
+            "imageFrames": 72,
+        },
+        "ship_name": "Zephyrus",
+        "ship_type": "Cruiser",
+        "ship_hitpoints": 76000,
+        "ship_speed": 380 * __speed_factor,
+        "ship_slots_laser": 4,
+        "ship_slots_generators": 3,
+        "ship_slots_extras": 3,
+        "ship_cargo": 300,
+        "ship_price": (90000, "BTC"),
+        "ship_attack_range": 600,
+    }
 
+    ship_perun = {
+        "ship_sprite": {
+            "imagePath": str(root / "ships" / "3d" / "ship100.png"),
+            "imageColumns": 9,
+            "imageFrames": 72,
+        },
+        "ship_name": "USER_PLAYER_NAME",
+        "ship_type": "Fragata",
+        "ship_hitpoints": 272000,
+        "ship_speed": 330 * __speed_factor,
+        "ship_slots_laser": 20,
+        "ship_slots_generators": 12,
+        "ship_slots_extras": 6,
+        "ship_cargo": 2000,
+        "ship_price": (250_000, "PLT"),
+        "ship_attack_range": 700,
+    }
+
+    alien_mali = {
+        "ship_sprite": {
+            "imagePath": str(root / "ships" / "3d" / "alien30.png"),
+            "imageColumns": 8,
+            "imageFrames": 37,
+        },
+        "ship_name": "Mali",
+        "ship_type": "Alien",
+        "ship_hitpoints": 7000,
+        "ship_speed": 290 * __speed_factor,
+        "ship_slots_laser": 2,
+        "ship_slots_generators": 0.98,
+        "ship_slots_extras": 0,
+        "ship_cargo": 0,
+        "ship_price": (0, "PLT"),
+        "ship_attack_range": 500,
+    }
 
 aim_target = {
     "imagePath": str(root / "hud" / "aim.png") ,
     "imageSize": (471, 512),
 }
+
+def mapValues(valor_atual: int, max_atual: int) -> float:
+    novo_max = 100
+    novo_min = 0
+    min_atual = 0
+    # Calcula o novo valor mapeado para o novo intervalo
+    novo_valor = (valor_atual - min_atual) * (novo_max - novo_min) / (max_atual - min_atual) + novo_min
+    return novo_valor
+
 
 
 class Inventory:
@@ -135,6 +206,7 @@ class Ship(BaseShip):
     current_selected_target_distance: float = 0
 
     def __init__(self) -> None:
+        self.current_map = Map(1, "Frist Space Base", [1280, 720])
         self.inventory = Inventory(self)
         self.battle_system = BattleSystem(self)
         
@@ -574,7 +646,6 @@ class UserShip(Ship):
     
     def __init__(self, ship_dict: dict) -> None:
         super().__init__()
-        self.current_map = map_11
         self.loadVariablesFromDict(ship_dict)
         self.ship_name_show = self.ship_name
         self.current_hitpoints = self.ship_hitpoints
@@ -607,7 +678,6 @@ class EnemyShip(Ship):
         self.enemy_list = []
         self.current_selected_target = self.player
         self.is_attacking = False
-        self.current_map = map_11
         self.loadVariablesFromDict(ship_dict)
         self.ship_name_show = self.ship_name
         self.getEnemyType()
@@ -756,7 +826,7 @@ class Player2(pygame.sprite.Sprite):
     
     def __init__(self, *groups: AbstractGroup) -> None:
         super().__init__(*groups)
-        self.image = pygame.image.load(os.path.join(root_folder ,'Shuttle.png')).convert_alpha()
+        self.image = pygame.image.load(os.path.join(root ,'Shuttle.png')).convert_alpha()
         self.rect = self.image.get_rect(center = (200, 200))
 
 
@@ -775,7 +845,7 @@ class Game:
                                                        )
         self.BACKGOURND_COLOR: Tuple[int, int, int] = (33, 33, 33)
 
-        self.player = UserShip(shipsavaliable.ship_perun)
+        self.player = UserShip(ShipsAvaliable.ship_perun)
         self.generateEnemys(5)
         self.hud = Hud(self.player)
 
@@ -799,7 +869,7 @@ class Game:
 
     def generateEnemys(self, qnt: int) -> None:
         for _ in range(qnt):
-            new_enemy = EnemyShip(shipsavaliable.ship_shuttle, self.player, self.SCREEN)
+            new_enemy = EnemyShip(ShipsAvaliable.ship_shuttle, self.player, self.SCREEN)
             new_enemy.setPosition()
             self.enemys.append(new_enemy)
         for enemy in self.enemys:
