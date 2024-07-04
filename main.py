@@ -96,10 +96,12 @@ class ShipsAvaliable:
         "ship_attack_range": 500,
     }
 
-aim_target = {
-    "imagePath": str(root / "hud" / "aim.png") ,
-    "imageSize": (471, 512),
-}
+@dataclass
+class Images:
+    aim_target = {
+        "imagePath": str(root / "hud" / "aim.png") ,
+        "imageSize": (471, 512),
+    }
 
 def mapValues(valor_atual: int, max_atual: int) -> float:
     novo_max = 100
@@ -108,7 +110,6 @@ def mapValues(valor_atual: int, max_atual: int) -> float:
     # Calcula o novo valor mapeado para o novo intervalo
     novo_valor = (valor_atual - min_atual) * (novo_max - novo_min) / (max_atual - min_atual) + novo_min
     return novo_valor
-
 
 
 class Inventory:
@@ -713,9 +714,9 @@ class EnemyShip(Ship):
 
 
     def loadSpriteAimTarget(self):
-        self.aim_target_image = pygame.image.load(aim_target["imagePath"]).convert_alpha()
+        self.aim_target_image = pygame.image.load(Images.aim_target["imagePath"]).convert_alpha()
         
-        _w, _h = aim_target["imageSize"]
+        _w, _h = Images.aim_target["imageSize"]
         factor = 0.4
         resize_w, resize_h = _w * factor, _h * factor
         self.aim_target_size = (resize_w, resize_h)
