@@ -76,10 +76,17 @@ export function initGame() {
     let mouseX = playerX + spriteWidth / 2;
     let mouseY = playerY + spriteHeight / 2;
 
+        // Atualizar a posição do alvo quando o mouse é clicado
+
+
     // Atualizar posição do mouse quando ele se move
     canvas.addEventListener('mousemove', function(event) {
         mouseX = event.clientX - canvas.getBoundingClientRect().left;
         mouseY = event.clientY - canvas.getBoundingClientRect().top;
+    });
+    canvas.addEventListener('click', function(event) {
+        targetX = event.clientX - canvas.getBoundingClientRect().left - playerImg.width / 2;
+        targetY = event.clientY - canvas.getBoundingClientRect().top - playerImg.height / 2;
     });
 
     // Iniciar o jogo
